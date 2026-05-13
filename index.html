@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Shadow Fianchetto Fresh Faces</title>
+
+<style>
+
+body{
+margin:0;
+padding:20px;
+background:#070312;
+font-family:Arial,sans-serif;
+}
+
+#sf-widget{
+max-width:700px;
+margin:auto;
+background:#12081f;
+border:2px solid #8b5cf6;
+border-radius:30px;
+padding:20px;
+box-shadow:0 0 35px rgba(139,92,246,.45);
+}
+
+.sf-title{
+text-align:center;
+color:#d8b4fe;
+font-size:30px;
+font-weight:bold;
+margin-bottom:20px;
+letter-spacing:2px;
+}
+
+.sf-card{
+display:flex;
+align-items:center;
+gap:15px;
+padding:15px;
+margin:14px 0;
+background:linear-gradient(135deg,#140822,#24113d);
+border-radius:20px;
+border:1px solid rgba(168,85,247,.4);
+transition:.3s;
+}
+
+.sf-card:hover{
+transform:translateY(-2px);
+box-shadow:0 0 20px rgba(168,85,247,.35);
+}
+
+.sf-avatar{
+width:65px;
+height:65px;
+border-radius:50%;
+border:2px solid #a855f7;
+object-fit:cover;
+}
+
+.sf-name{
+color:white;
+font-size:18px;
+font-weight:bold;
+}
+
+.sf-joined{
+color:#c4b5fd;
+font-size:13px;
+margin-top:4px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="sf-widget">
+
+<div class="sf-title">
+♛ SHADOW FIANCHETTO — FRESH FACES ♛
+</div>
+
+<div id="members-container">
+Loading newest members...
+</div>
+
+</div>
+
+<script>
+
+const container =
+document.getElementById("members-container");
+
+async function loadMembers(){
+
+try{
+
+const proxy =
+"https://api.allorigins.win/raw?url=";
+
+const target =
+encodeURIComponent(
+"https://www.chess.com/clubs/members/shadow-fianchetto?sort=12"
+);
+
+const response =
+await fetch(proxy + target);
+
+const html =
+await response.text();
+
+const parser =
+new DOMParser();
+
+const doc =
+parser.parseFromString(html,"text/html");
+
+const links =
+doc.querySelectorAll('a[href^="/member/"]');
+
+container.innerHTML = "";
+
+let used = [];
+
+links.forEach((link,index)=>{
+
+if(index >= 5) return;
+
+const username =
+link.textContent.trim();
+
+if(!username) return;
+
+if(used.includes(username)) return;
+
+used.push(username);
+
+const row =
+link.closest("tr");
+
+const avatar =
+row?.querySelector("img")?.src ||
+"https://images.chesscomfiles.com/uploads/v1/user/default.688d1b3f.200x200o.85deadb7.png";
+
+container.innerHTML += `
+
+<div class="sf-card">
+
+<img
+class="sf-avatar"
+src="${avatar}">
+
+<div>
+
+<div class="sf-name">
+@${username}
+</div>
+
+<div class="sf-joined">
+Newest club member
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}catch(error){
+
+console.error(error);
+
+container.innerHTML =
+"Failed to load newest members.";
+
+}
+
+}
+
+loadMembers();
+
+</script>
+
+</body>
+</html>
